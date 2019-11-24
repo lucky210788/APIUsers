@@ -1,15 +1,15 @@
-window.onload = function () {
+window.onload = () => {
     const btnGetUsers = document.querySelector('.btn-get-users');
 
-    btnGetUsers.addEventListener('click', function () {
-        get('https://jsonplaceholder.typicode.com/users').then(function (response) {
+    btnGetUsers.addEventListener('click', () => {
+        get('https://jsonplaceholder.typicode.com/users').then((response) => {
             renderUsers(JSON.parse(response));
-        }).then(function () {
+        }).then(() => {
             let usersList = document.querySelector('.users-list');
-            usersList.addEventListener('click', function (e) {
+            usersList.addEventListener('click', (e) => {
                 handleClickOnUser(e.target.id);
             });
-        }).catch(function (error) {
+        }).catch((error) => {
             console.error(error);
         });
     });
@@ -17,10 +17,10 @@ window.onload = function () {
 
 function get(url) {
     const toast = new Toasty();
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
         let request = new XMLHttpRequest();
         request.open('GET', url);
-        request.onload = function () {
+        request.onload = () => {
             if (request.status === 200) {
                 toast.info("successful response");
                 resolve(request.response);
@@ -87,27 +87,27 @@ function renderComments(posts) {
 
 function handleClickOnUser(user) {
     get(`https://jsonplaceholder.typicode.com/posts?userId=${user}`)
-        .then(function (response) {
+        .then((response) => {
             renderPosts(JSON.parse(response));
         })
-        .then(function () {
+        .then(() => {
             getCountComments();
         })
-        .then(function () {
+        .then(() => {
             let postsList = document.querySelector('.posts-list');
-            postsList.addEventListener('click', function (e) {
+            postsList.addEventListener('click', (e) => {
                 handleClickOnPost(e.target.id);
             })
-        }).catch(function (error) {
+        }).catch((error) => {
         console.error(error);
     });
 }
 
 function handleClickOnPost(post) {
     get(`https://jsonplaceholder.typicode.com/comments?postId=${post}`)
-        .then(function (response) {
+        .then((response) => {
             renderComments(JSON.parse(response));
-        }).catch(function (error) {
+        }).catch((error) => {
         console.error(error);
     });
 }
@@ -118,10 +118,10 @@ function getCountComments() {
         const post = postsList[i];
         let postBlock = post.querySelector('.comments');
         get(` https://jsonplaceholder.typicode.com/comments?postId=${post.getAttribute('id')}`)
-            .then(function (response) {
+            .then((response) => {
             const comments = JSON.parse(response);
             postBlock.innerHTML = comments.length;
-        }).catch(function (error) {
+        }).catch((error) => {
             console.error(error);
         });
     }

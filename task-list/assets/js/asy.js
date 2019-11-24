@@ -1,12 +1,12 @@
-window.onload = function () {
+window.onload = () => {
     const btnGetUsers = document.querySelector('.btn-get-users');
 
-    btnGetUsers.addEventListener('click', async function () {
+    btnGetUsers.addEventListener('click', async () => {
         try {
             let users = await get('https://jsonplaceholder.typicode.com/users');
             buildUsersList(JSON.parse(users));
             let usersList = document.querySelector('.users-list');
-            usersList.addEventListener('click', async function (e) {
+            usersList.addEventListener('click', async (e) => {
                 let posts = await get(`https://jsonplaceholder.typicode.com/posts?userId=${e.target.id}`);
                 buildPostList(JSON.parse(posts));
                 let postsItems = document.querySelectorAll('.posts-list-item');
@@ -17,7 +17,7 @@ window.onload = function () {
                     postBlock.innerHTML = JSON.parse(countComments).length;
                 }
                 let postsList = document.querySelector('.posts-list');
-                postsList.addEventListener('click', async function (e) {
+                postsList.addEventListener('click', async (e) => {
                     const comments = await get(`https://jsonplaceholder.typicode.com/comments?postId=${e.target.id}`);
                     buildCommentsList(JSON.parse(comments));
                 })
@@ -29,13 +29,16 @@ window.onload = function () {
 };
 
 function get(url) {
-    return new Promise(function (resolve, reject) {
+    const toast = new Toasty();
+    return new Promise((resolve, reject) => {
         let request = new XMLHttpRequest();
         request.open('GET', url);
-        request.onload = function () {
+        request.onload = () => {
             if (request.status === 200) {
+                toast.info("successful response");
                 resolve(request.response);
             } else {
+                toast.error('not successful response');
                 reject(Error(
                     'Произошла ошибка. Код ошибки:' + request.statusText
                 ));
