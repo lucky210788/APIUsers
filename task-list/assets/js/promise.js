@@ -119,9 +119,9 @@ function getCountComments() {
         let postBlock = post.querySelector('.comments');
         get(` https://jsonplaceholder.typicode.com/comments?postId=${post.getAttribute('id')}`)
             .then((response) => {
-            const comments = JSON.parse(response);
-            postBlock.innerHTML = comments.length;
-        }).catch((error) => {
+                const comments = JSON.parse(response);
+                postBlock.innerHTML = comments.length;
+            }).catch((error) => {
             console.error(error);
         });
     }
