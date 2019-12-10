@@ -1,11 +1,12 @@
+const baseUrl = 'https://jsonplaceholder.typicode.com';
+
 window.onload = () => {
     const btnGetUsers = document.querySelector('.btn-get-users');
 
     btnGetUsers.addEventListener('click', () => {
-        get('https://jsonplaceholder.typicode.com/users').then((response) => {
-            renderUsers(JSON.parse(response));
-        }).then(() => {
-            let usersList = document.querySelector('.users-list');
+        get(`${baseUrl}/users`).then((response) => {
+            renderUsers(response);
+            const usersList = document.querySelector('.users-list');
             usersList.addEventListener('click', (e) => {
                 handleClickOnUser(e.target.id);
             });
@@ -23,7 +24,7 @@ function get(url) {
         request.onload = () => {
             if (request.status === 200) {
                 toast.info("successful response");
-                resolve(request.response);
+                resolve(JSON.parse(request.response));
             } else {
                 toast.error('not successful response');
                 reject(Error(
@@ -43,11 +44,9 @@ function renderUsers(users) {
     postsList.innerHTML = '';
     usersList.innerHTML = '';
     comment.innerHTML = '';
-    for (let i = 0; i < users.length; i++) {
-        const user = users[i];
-        const itemList = `<li id="${user.id}" class="users-list-item list-item">${user.name}</li>`;
-        usersList.innerHTML += itemList;
-    }
+    users.forEach((user) => {
+        usersList.innerHTML += `<li id="${user.id}" class="users-list-item list-item">${user.name}</li>`;
+    });
 }
 
 function renderPosts(posts) {
@@ -56,8 +55,7 @@ function renderPosts(posts) {
     list.setAttribute('class', 'posts-list list');
     list.innerHTML = '';
     comment.innerHTML = '';
-    for (let i = 0; i < posts.length; i++) {
-        const post = posts[i];
+    posts.forEach((post) => {
         const itemList = `<li id="${post.id}" class="posts-list-item list-item">
                                 ${post.title}
                                 <div class="comments">
@@ -65,7 +63,7 @@ function renderPosts(posts) {
                                 </div>
                             </li>`;
         list.innerHTML += itemList;
-    }
+    });
     const block = document.querySelector('.posts');
     block.innerHTML = '';
     block.appendChild(list);
@@ -75,26 +73,20 @@ function renderComments(posts) {
     let list = document.createElement('ul');
     list.setAttribute('class', 'comment-list list');
     list.innerHTML = '';
-    for (let i = 0; i < posts.length; i++) {
-        const post = posts[i];
-        const itemList = `<li id="${post.id}" class="posts-list-item list-item">${post.name}</li>`;
-        list.innerHTML += itemList;
-    }
+    posts.forEach((post) => {
+        list.innerHTML += `<li id="${post.id}" class="posts-list-item list-item">${post.name}</li>`;
+    });
     const block = document.querySelector('.comment');
     block.innerHTML = '';
     block.appendChild(list);
 }
 
 function handleClickOnUser(user) {
-    get(`https://jsonplaceholder.typicode.com/posts?userId=${user}`)
+    get(`${baseUrl}/posts?userId=${user}`)
         .then((response) => {
-            renderPosts(JSON.parse(response));
-        })
-        .then(() => {
+            renderPosts(response);
             getCountComments();
-        })
-        .then(() => {
-            let postsList = document.querySelector('.posts-list');
+            const postsList = document.querySelector('.posts-list');
             postsList.addEventListener('click', (e) => {
                 handleClickOnPost(e.target.id);
             })
@@ -104,25 +96,23 @@ function handleClickOnUser(user) {
 }
 
 function handleClickOnPost(post) {
-    get(`https://jsonplaceholder.typicode.com/comments?postId=${post}`)
+    get(`${baseUrl}/comments?postId=${post}`)
         .then((response) => {
-            renderComments(JSON.parse(response));
+            renderComments(response);
         }).catch((error) => {
         console.error(error);
     });
 }
 
 function getCountComments() {
-    let postsList = document.querySelectorAll('.posts-list-item');
-    for (let i = 0; i < postsList.length; i++) {
-        const post = postsList[i];
-        let postBlock = post.querySelector('.comments');
-        get(` https://jsonplaceholder.typicode.com/comments?postId=${post.getAttribute('id')}`)
+    const postsList = document.querySelectorAll('.posts-list-item');
+    postsList.forEach((post) => {
+        const postBlock = post.querySelector('.comments');
+        get(`${baseUrl}/comments?postId=${post.getAttribute('id')}`)
             .then((response) => {
-                const comments = JSON.parse(response);
-                postBlock.innerHTML = comments.length;
+                postBlock.innerHTML = response.length;
             }).catch((error) => {
             console.error(error);
         });
-    }
+    });
 }
